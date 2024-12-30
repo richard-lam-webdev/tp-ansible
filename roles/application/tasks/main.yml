@@ -1,0 +1,47 @@
+- name: Install PHP and dependencies
+  ansible.builtin.apt:
+    name:
+      - php
+      - php-mysql
+      - php-curl
+      - php-mbstring
+      - unzip
+      - composer
+    state: present
+
+- name: Clone Bagisto repository
+  ansible.builtin.git:
+    repo: https://github.com/bagisto/bagisto.git
+    dest: /var/www/bagisto
+
+- name: Install dependencies with Composer
+  ansible.builtin.shell:
+    cmd: composer install --no-dev
+    args:
+      chdir: /var/www/bagisto
+
+- name: Set environment variables
+  ansible.builtin.copy:
+    dest: /var/www/bagisto/.env
+    content: |
+      APP_NAME=Bagisto
+      APP_ENV=local
+      APP_KEY=base64:...
+      APP_DEBUG=true
+      APP_URL=http://localhost
+
+      DB_CONNECTION=mysql
+      DB_HOST=127.0.0.1
+      DB_PORT=3306
+      DB_DATABASE=bagisto
+      DB_USERNAME=bagisto_user
+      DB_PASSWORD=secure_password
+
+- name: Set permissions for Bagisto
+  ansible.builtin.file:
+    path: /var/www/bagisto
+    state: directory
+    mode: "0755"
+    recurse: yes
+    owner: www-data
+    group: www-data

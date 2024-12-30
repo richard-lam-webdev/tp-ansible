@@ -1,0 +1,7 @@
+- name: Setup Bagisto project environment
+  hosts: all
+  become: true
+  roles:
+    - webserver
+    - database
+    - application

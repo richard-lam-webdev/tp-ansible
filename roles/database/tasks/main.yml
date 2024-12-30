@@ -1,0 +1,22 @@
+- name: Install MySQL
+  ansible.builtin.apt:
+    name: mysql-server
+    state: present
+
+- name: Start MySQL service
+  ansible.builtin.service:
+    name: mysql
+    state: started
+
+- name: Create database for Bagisto
+  mysql_db:
+    name: bagisto
+    state: present
+
+- name: Create user for Bagisto
+  mysql_user:
+    name: bagisto_user
+    password: secure_password
+    priv: "bagisto.*:ALL"
+    host: "%"
+    state: present
